@@ -5,9 +5,10 @@
   "description": "Notifies you",
   "version": "1.0",
 
+  "background": {"scripts" : ["bg.js"]},
   "browser_action": {
     "default_icon": "images/icon.png",
     "default_popup": "./popup.html"
-  }
-  "permissions": ["http://codeforces.com/api/contest.list"]
+  },
+  "permissions":["http://codeforces.com/api/contest.list"]
 }
