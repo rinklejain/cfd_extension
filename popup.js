@@ -1,118 +1,134 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+var ongoing_contests , upcoming_contests;
 
-/**
- * Get the current URL.
- *
- * @param {function(string)} callback - called when the URL of the current tab
- *   is found.
- */
-function getCurrentTabUrl(callback) {
-  // Query filter to be passed to chrome.tabs.query - see
-  // https://developer.chrome.com/extensions/tabs#method-query
-  var queryInfo = {
-    active: true,
-    currentWindow: true
-  };
+function get_contests(){
 
-  chrome.tabs.query(queryInfo, function(tabs) {
-    // chrome.tabs.query invokes the callback with a list of tabs that match the
-    // query. When the popup is opened, there is certainly a window and at least
-    // one tab, so we can safely assume that |tabs| is a non-empty array.
-    // A window can only have one active tab at a time, so the array consists of
-    // exactly one tab.
-    var tab = tabs[0];
+  var xmlhttp = new XMLHttpRequest();
+  var upcoming_count = 0;
+  var ongoing_count = 0;
+  var upcoming_contests = {items: []};
+  var ongoing_contests = {items: []};
+//console.log("rinkle ka infinite swag");
+xmlhttp.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+      //document.getElementById("aa").innerHTML = contest_list.result[];
+      var contest_list = JSON.parse(this.responseText); 
+      var x = new Date();
+      var offset = x.getTimezoneOffset();
+      var count = 0;
+      var localStorageData = localStorage.getItem("FetchedContestURLs");
+      if((localStorageData === null) || (localStorageData.length === 0))
+        { localStorageData = "{}";}
+      var prevFetchContestURLs = JSON.parse(localStorageData);
+      console.log("offset")
+      console.log(offset);
+      console.log("result")
+      console.dir(contest_list.result);
+      //document.getElementById("aa").innerHTML= contest_list.result[0].id;
+      console.log(contest_list.result.length);
+      for(var i=0; i<100; i++)
+      {
+        var start_time = contest_list.result[i].startTimeSeconds * 1000;
+        var end_time = Date.now() - contest_list.result[i].relativeTimeSeconds*1000;
+        var output = check_status(start_time,end_time);
+        console.log(i+"+"+output);
+        if(output == 1){
+          ongoing_contests.items.push({"id": contest_list.result[i].id,
+            "name": contest_list.result[i].name, 
+            "st": contest_list.result[i].startTimeSeconds-offset*60000, 
+            "du": contest_list.result[i].durationSeconds, 
+            "url": "http://codeforces.com/contest/"+contest_list.result[i].id
+          });
+        }
+        if(output == 2){
+          upcoming_contests.items.push({"id": contest_list.result[i].id,
+            "name": contest_list.result[i].name, 
+            "st": contest_list.result[i].startTimeSeconds-offset*60000, 
+            "du": contest_list.result[i].durationSeconds, 
+            "url": "http://codeforces.com/ctontest/"+contest_list.result[i].id
+          });
+        }
+    
+      }
+  }
+console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+console.dir(upcoming_contests);
+};
 
-    // A tab is a plain object that provides information about the tab.
-    // See https://developer.chrome.com/extensions/tabs#type-Tab
-    var url = tab.url;
 
-    // tab.url is only available if the "activeTab" permission is declared.
-    // If you want to see the URL of other tabs (e.g. after removing active:true
-    // from |queryInfo|), then the "tabs" permission is required to see their
-    // "url" properties.
-    console.assert(typeof url == 'string', 'tab.url should be a string');
-
-    callback(url);
-  });
-
-  // Most methods of the Chrome extension APIs are asynchronous. This means that
-  // you CANNOT do something like this:
-  //
-  // var url;
-  // chrome.tabs.query(queryInfo, function(tabs) {
-  //   url = tabs[0].url;
-  // });
-  // alert(url); // Shows "undefined", because chrome.tabs.query is async.
+xmlhttp.open("GET", "http://codeforces.com/api/contest.list", true);
+xmlhttp.send();
 }
 
-/**
- * @param {string} searchTerm - Search term for Google Image search.
- * @param {function(string,number,number)} callback - Called when an image has
- *   been found. The callback gets the URL, width and height of the image.
- * @param {function(string)} errorCallback - Called when the image is not found.
- *   The callback gets a string that describes the failure reason.
- */
-/*function getImageUrl(searchTerm, callback, errorCallback) {
-  // Google image search - 100 searches per day.
-  // https://developers.google.com/image-search/
-  var searchUrl = 'https://ajax.googleapis.com/ajax/services/search/images' +
-    '?v=1.0&q=' + encodeURIComponent(searchTerm);
-  var x = new XMLHttpRequest();
-  x.open('GET', searchUrl);
-  // The Google image search API responds with JSON, so let Chrome parse it.
-  x.responseType = 'json';
-  x.onload = function() {
-    // Parse and process the response from Google Image Search.
-    var response = x.response;
-    if (!response || !response.responseData || !response.responseData.results ||
-        response.responseData.results.length === 0) {
-      errorCallback('No response from Google Image search!');
-      return;
+
+function check_status(start_time, end_time){
+  var current_time = Date.now();
+  console.log(current_time);
+  console.log(end_time);
+  if(current_time > end_time) {
+    return 0;
+  }
+  else if(current_time > start_time && current_time < end_time) {
+    return 1;
+  }
+  else if(current_time < start_time) {
+    return 2; 
+  }
+}
+
+
+get_contests();
+
+function putdata(json)
+{ 
+  // removes the previous contest entries.
+  $("#upcoming > a").remove();
+  $("#ongoing > a").remove();
+  $("hr").remove();
+
+  var FetchedContestURLs = {};
+
+  var localStorageData = localStorage.getItem("FetchedContestURLs");
+  if((localStorageData === null) || (localStorageData.length === 0)){ localStorageData = "{}";}
+  var prevFetchContestURLs = JSON.parse(localStorageData);
+  var notifierTag = false;
+
+  curTime  = new Date();
+
+  $.each(ongoing_contests.items , function(i,post){ 
+    e = new Date(post.st+du);
+
+    if(e>curTime){
+      Time_dif = e-curTime;
+
+      $("#ongoing").append(
+        '<a  href="'+post.url+'">'+
+        '<li><br><h3>'+post.name+'</h3>'+
+        '<h4>End: '+e.toString() +' ( ' + (Time_dif/3600000) + ' hrs ' + ((Time_dif%3600000)/60000) + ' min  )</h4><br>'+
+        '</li><hr></a>');
     }
-    var firstResult = response.responseData.results[0];
-    // Take the thumbnail instead of the full image to get an approximately
-    // consistent image size.
-    var imageUrl = firstResult.tbUrl;
-    var width = parseInt(firstResult.tbWidth);
-    var height = parseInt(firstResult.tbHeight);
-    console.assert(
-        typeof imageUrl == 'string' && !isNaN(width) && !isNaN(height),
-        'Unexpected respose from the Google Image Search API!');
-    callback(imageUrl, width, height);
-  };
-  x.onerror = function() {
-    errorCallback('Network error.');
-  };
-  x.send();
-}
-*/
-/*function renderStatus(statusText) {
-  document.getElementById('status').textContent = statusText;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  getCurrentTabUrl(function(url) {
-    // Put the image URL in Google search.
-    renderStatus('Performing Google Image search for ' + url);
-
-    getImageUrl(url, function(imageUrl, width, height) {
-
-      renderStatus('Search term: ' + url + '\n' +
-          'Google image search result: ' + imageUrl);
-      var imageResult = document.getElementById('image-result');
-      // Explicitly set the width/height to minimize the number of reflows. For
-      // a single image, this does not matter, but if you're going to embed
-      // multiple external images in your page, then the absence of width/height
-      // attributes causes the popup to resize multiple times.
-      imageResult.width = width;
-      imageResult.height = height;
-      imageResult.src = imageUrl;
-      imageResult.hidden = false;
-
-    }, function(errorMessage) {
-      renderStatus('Cannot display image. ' + errorMessage);
-    });
+    
   });
-});*/
+
+  $.each(upcoming_contests.items , function(i,post){ 
+    e = new Date(post.st+du);
+
+    FetchedContestURLs[post.url] = 1;
+    Time_dif = e-curTime;
+    unreadTag = '<div class="unread">new</div>';
+
+    $("#upcoming").append('<div class="unread-bg">' + unreadTag + '<a  href='+'"'+post.url+'"'+'>\
+      <li><br><h3>'+post.name+'</h3>\
+      <h4>Start: '+e.toString()+' ( ' +  + Time_dif/(24*3600000) + ' days ' + (Time_dif%(24*3600000))/3600000 + ' hrs)</h4><br>\
+      <h4>Duration: '+post.du+'</h4><br>\
+      </li><hr></a></div>');
+
+    
+  });
+
+  //saving into local storage
+  localStorage.setItem("FetchedContestURLs",JSON.stringify(FetchedContestURLs));
+  if(notifierTag){document.getElementById('scroll-info').style.display = "inline";}
+  chrome.browserAction.setBadgeText({text: ""}); // We have 0 unread items.
+  setTimeout(function(){$("#scroll-info").fadeOut(700);},5000);
+}
+

@@ -10,5 +10,6 @@
     "default_icon": "images/icon.png",
     "default_popup": "./popup.html"
   },
+  
   "permissions":["http://codeforces.com/api/contest.list"]
 }
