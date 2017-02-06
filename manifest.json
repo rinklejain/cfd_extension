@@ -11,5 +11,5 @@
     "default_popup": "./popup.html"
   },
   
-  "permissions":["http://codeforces.com/api/contest.list","tabs"],
+  "permissions":["http://codeforces.com/api/contest.list","tabs"]
 }
