@@ -7,10 +7,11 @@
 <html>
   <head>
     <title>Notify</title>
-    <!--<style>
+    <style>
       body {
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
+        width:200px;
       }
       #status {
         /* avoid an excessively wide status text */
@@ -19,7 +20,7 @@
         overflow: hidden;
         max-width: 400px;
       }
-    </style>-->
+    </style>
 
     <!--
       - JavaScript and HTML must be in separate files: see our Content Security
@@ -28,23 +29,18 @@
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
      -->
 
+    <script type="text/javascript" src = "jquery.js"></script>
     <script type="text/javascript" src="popup.js"></script>
-    <script type="text/javascript" src = "jquery.js">
-    </script>
-      <script type="text/javascript" src="jquery-2.js"></script>
-      <script type="text/javascript" src="jquery-ui.js"></script>
-       <script type="text/javascript" src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
-      <script type="text/javascript" src="jquery-1.2.6.js"></script>
+    
+
 
   </head>
   <body>
-    <div id = "aa">hhhhhhhhhhh</div>
-      <div id="ongoing">
-          <div class='title'><h3>Live Contests</h3></div>
-      </div>
-      <div id="upcoming">
-          <div class='title'><h3>Upcoming Contests</h3></div>
-      </div>
+    
+      <div class='title'><h3>Live Contests</h3></div>
+      <div id="ongoing"></div>
+      <div class='title'><h3>Upcoming Contests</h3></div>
+      <div id="upcoming"></div>
     
     <div id="scroll-info">new contests added, scroll to view</div>
 

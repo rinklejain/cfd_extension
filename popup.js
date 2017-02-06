@@ -1,15 +1,13 @@
-var ongoing_contests , upcoming_contests;
+var upcoming_contests = {items: []};
+var ongoing_contests = {items: []};
 
 function get_contests(){
-
   var xmlhttp = new XMLHttpRequest();
   var upcoming_count = 0;
   var ongoing_count = 0;
-  var upcoming_contests = {items: []};
-  var ongoing_contests = {items: []};
 //console.log("rinkle ka infinite swag");
   xmlhttp.onreadystatechange = function() {
-  if (this.readyState == 4 && this.status == 200) {
+    if (this.readyState == 4 && this.status == 200) {
       //document.getElementById("aa").innerHTML = contest_list.result[];
       var contest_list = JSON.parse(this.responseText); 
       var x = new Date();
@@ -32,7 +30,7 @@ function get_contests(){
             "name": contest_list.result[i].name, 
             "st": contest_list.result[i].startTimeSeconds-offset*60000, 
             "du": contest_list.result[i].durationSeconds, 
-            "url": "http://codeforces.com/contest/"+contest_list.result[i].id
+            "url": "http://codeforces.com/contests/"+contest_list.result[i].id
           });
         }
         if(output == 2){
@@ -40,19 +38,16 @@ function get_contests(){
             "name": contest_list.result[i].name, 
             "st": contest_list.result[i].startTimeSeconds-offset*60000, 
             "du": contest_list.result[i].durationSeconds, 
-            "url": "http://codeforces.com/ctontest/"+contest_list.result[i].id
+            "url": "http://codeforces.com/contests/"+contest_list.result[i].id
           });
-        }
-    
+        }   
       }
-  }
-//console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-console.dir(upcoming_contests);
-};
-
-
-xmlhttp.open("GET", "http://codeforces.com/api/contest.list", true);
-xmlhttp.send();
+      console.log('putdata called');
+      putdata();
+    }
+  };
+  xmlhttp.open("GET", "http://codeforces.com/api/contest.list", true);
+  xmlhttp.send();
 }
 
 
@@ -70,12 +65,12 @@ function check_status(start_time, end_time){
     return 2; 
   }
 }
-
-
 get_contests();
 
 function putdata()
 { 
+  console.log(upcoming_contests);
+  console.log(ongoing_contests);
   // removes the previous contest entries.
   $("#upcoming").empty();
   $("#ongoing").empty();
@@ -90,8 +85,8 @@ function putdata()
 
   curTime  = new Date();
 
-  $jQuery.each(ongoing_contests.items , function(i,post){ 
-    e = new Date((post.st+du)*1000);
+  $.each(ongoing_contests.items , function(i,post){ 
+    e = new Date((post.st+post.du)*1000);
 
 
     if(e>curTime){
@@ -106,15 +101,15 @@ function putdata()
     
   });
 
-  $jQuery.each(upcoming_contests.items , function(i,post){ 
-    e = new Date((post.st+du)*1000);
+  $.each(upcoming_contests.items , function(i,post){ 
+    e = new Date((post.st+post.du)*1000);
 
     FetchedContestURLs[post.url] = 1;
     Time_dif = e-curTime;
     console.log(post.url);
     //unreadTag = '<div class="unread">new</div>';
 
-    $("#upcoming").append('<div class="unread-bg">' + '<a  href='+'"'+post.url+'"'+'>\
+    $("#upcoming").append('<div class="unread-bg">' + '<a  class = "contest_url" href='+'"'+post.url+'"'+' >\
       <li><br><h3>'+post.name+'</h3>\
       <h4>Start: '+e.toString()+' ( ' +  + Time_dif/(24*3600000) + ' days ' + (Time_dif%(24*3600000))/3600000 + ' hrs)</h4><br>\
       <h4>Duration: '+post.du+'</h4><br>\
@@ -130,4 +125,10 @@ function putdata()
   chrome.browserAction.setBadgeText({text: ""}); // We have 0 unread items.
   setTimeout(function(){$("#scroll-info").fadeOut(700);},5000);
 }
-putdata();
+
+    $(document).ready(function(){
+    $('body').on('click', 'a', function(){
+     chrome.tabs.create({url: $(this).attr('href')});
+     return false;
+     });
+    });

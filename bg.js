@@ -32,15 +32,17 @@ function get_contests(){
                                          "name": contest_list.result[i].name, 
                                          "st": contest_list.result[i].startTimeSeconds-offset*60000, 
                                          "du": contest_list.result[i].durationSeconds,, 
-                                         "url": "http://codeforces.com/contest/"+contest_list.result[i].id
+                                         "url": "http://codeforces.com/contests/"+contest_list.result[i].id
                                        });
+      console.log("http://codeforces.com/contest/"+contest_list.result[i].id);
+      console.log("aaaaaaa");
 	  }
     if(output == 2){
       upcoming_contests.items.push({"id": contest_list.result[i].id,
                                          "name": contest_list.result[i].name, 
                                          "st": contest_list.result[i].startTimeSeconds-offset*60000, 
                                          "du": contest_list.result[i].durationSeconds, 
-                                         "url": "http://codeforces.com/contest/"+contest_list.result[i].id
+                                         "url": "http://codeforces.com/contests/"+contest_list.result[i].id
                                        });
     }
     if("http://codeforces.com/contest/"+contest_list.result[i].id in prevFetchContestURLs)
