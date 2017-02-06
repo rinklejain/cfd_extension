@@ -8,7 +8,7 @@ function get_contests(){
   var upcoming_contests = {items: []};
   var ongoing_contests = {items: []};
 //console.log("rinkle ka infinite swag");
-xmlhttp.onreadystatechange = function() {
+  xmlhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 200) {
       //document.getElementById("aa").innerHTML = contest_list.result[];
       var contest_list = JSON.parse(this.responseText); 
@@ -19,18 +19,14 @@ xmlhttp.onreadystatechange = function() {
       if((localStorageData === null) || (localStorageData.length === 0))
         { localStorageData = "{}";}
       var prevFetchContestURLs = JSON.parse(localStorageData);
-      console.log("offset")
-      console.log(offset);
-      console.log("result")
-      console.dir(contest_list.result);
       //document.getElementById("aa").innerHTML= contest_list.result[0].id;
-      console.log(contest_list.result.length);
+      //console.log(contest_list.result.length);
       for(var i=0; i<100; i++)
       {
         var start_time = contest_list.result[i].startTimeSeconds * 1000;
         var end_time = Date.now() - contest_list.result[i].relativeTimeSeconds*1000;
         var output = check_status(start_time,end_time);
-        console.log(i+"+"+output);
+        //console.log(i+"+"+output);
         if(output == 1){
           ongoing_contests.items.push({"id": contest_list.result[i].id,
             "name": contest_list.result[i].name, 
@@ -50,7 +46,7 @@ xmlhttp.onreadystatechange = function() {
     
       }
   }
-console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+//console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 console.dir(upcoming_contests);
 };
 
@@ -62,8 +58,8 @@ xmlhttp.send();
 
 function check_status(start_time, end_time){
   var current_time = Date.now();
-  console.log(current_time);
-  console.log(end_time);
+  //console.log(current_time);
+  //console.log(end_time);
   if(current_time > end_time) {
     return 0;
   }
@@ -78,24 +74,25 @@ function check_status(start_time, end_time){
 
 get_contests();
 
-function putdata(json)
+function putdata()
 { 
   // removes the previous contest entries.
-  $("#upcoming > a").remove();
-  $("#ongoing > a").remove();
+  $("#upcoming").empty();
+  $("#ongoing").empty();
   $("hr").remove();
 
   var FetchedContestURLs = {};
+  var notifierTag = true;
 
   var localStorageData = localStorage.getItem("FetchedContestURLs");
   if((localStorageData === null) || (localStorageData.length === 0)){ localStorageData = "{}";}
   var prevFetchContestURLs = JSON.parse(localStorageData);
-  var notifierTag = false;
 
   curTime  = new Date();
 
-  $.each(ongoing_contests.items , function(i,post){ 
-    e = new Date(post.st+du);
+  $jQuery.each(ongoing_contests.items , function(i,post){ 
+    e = new Date((post.st+du)*1000);
+
 
     if(e>curTime){
       Time_dif = e-curTime;
@@ -109,14 +106,15 @@ function putdata(json)
     
   });
 
-  $.each(upcoming_contests.items , function(i,post){ 
-    e = new Date(post.st+du);
+  $jQuery.each(upcoming_contests.items , function(i,post){ 
+    e = new Date((post.st+du)*1000);
 
     FetchedContestURLs[post.url] = 1;
     Time_dif = e-curTime;
-    unreadTag = '<div class="unread">new</div>';
+    console.log(post.url);
+    //unreadTag = '<div class="unread">new</div>';
 
-    $("#upcoming").append('<div class="unread-bg">' + unreadTag + '<a  href='+'"'+post.url+'"'+'>\
+    $("#upcoming").append('<div class="unread-bg">' + '<a  href='+'"'+post.url+'"'+'>\
       <li><br><h3>'+post.name+'</h3>\
       <h4>Start: '+e.toString()+' ( ' +  + Time_dif/(24*3600000) + ' days ' + (Time_dif%(24*3600000))/3600000 + ' hrs)</h4><br>\
       <h4>Duration: '+post.du+'</h4><br>\
@@ -125,10 +123,11 @@ function putdata(json)
     
   });
 
+
   //saving into local storage
   localStorage.setItem("FetchedContestURLs",JSON.stringify(FetchedContestURLs));
   if(notifierTag){document.getElementById('scroll-info').style.display = "inline";}
   chrome.browserAction.setBadgeText({text: ""}); // We have 0 unread items.
   setTimeout(function(){$("#scroll-info").fadeOut(700);},5000);
 }
-
+putdata();

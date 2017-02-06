@@ -17,15 +17,16 @@ function get_contests(){
       if((localStorageData === null) || (localStorageData.length === 0))
         { localStorageData = "{}";}
       var prevFetchContestURLs = JSON.parse(localStorageData);
-      console.log(offset);
-      console.dir(contest_list.result);
+      //console.log(offset);
+      //console.dir(contest_list.result);
       //document.getElementById("aa").innerHTML= contest_list.result[0].id;
-	    console.log(contest_list.result.length);
+	    //console.log(contest_list.result.length);
 	for(var i=0; i<contest_list.result.length; i++)
 	{
-	  var output= check_status(contest_list.result[i].startTimeSeconds, 
-                            contest_list.result[i].startTimeSeconds+contest_list.result[i].durationSeconds);
-    console.log(i+"+"+output);
+	  var start_time = contest_list.result[i].startTimeSeconds * 1000;
+    var end_time = Date.now() - contest_list.result[i].relativeTimeSeconds*1000;
+    var output = check_status(start_time,end_time);
+        //console.log(i+"+"+output);
 	  if(output == 1){
 	    ongoing_contests.items.push({"id": contest_list.result[i].id,
                                          "name": contest_list.result[i].name, 
@@ -51,8 +52,8 @@ function get_contests(){
           chrome.browserAction.setBadgeText({text:count.toString()});
           chrome.browserAction.setBadgeBackgroundColor({ color: "#4c9bff"});
     }
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        console.dir(upcoming_contests);
+        //console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        //console.dir(upcoming_contests);
   }
 };
 xmlhttp.open("GET", "http://codeforces.com/api/contest.list", true);
