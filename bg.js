@@ -1,4 +1,4 @@
-function get_contests(){
+
   var xmlhttp = new XMLHttpRequest();
   var upcoming_count = 0;
   var ongoing_count = 0;
@@ -31,11 +31,14 @@ function get_contests(){
 	    ongoing_contests.items.push({"id": contest_list.result[i].id,
                                          "name": contest_list.result[i].name, 
                                          "st": contest_list.result[i].startTimeSeconds-offset*60000, 
-                                         "du": contest_list.result[i].durationSeconds,, 
+                                         "du": contest_list.result[i].durationSeconds,
                                          "url": "http://codeforces.com/contests/"+contest_list.result[i].id
                                        });
-      console.log("http://codeforces.com/contest/"+contest_list.result[i].id);
-      console.log("aaaaaaa");
+      //console.log("http://codeforces.com/contest/"+contest_list.result[i].id);
+      //console.log("aaaaaaa");
+      if("http://codeforces.com/contest/"+contest_list.result[i].id in prevFetchContestURLs)
+      {continue;}
+    count++;
 	  }
     if(output == 2){
       upcoming_contests.items.push({"id": contest_list.result[i].id,
@@ -44,11 +47,12 @@ function get_contests(){
                                          "du": contest_list.result[i].durationSeconds, 
                                          "url": "http://codeforces.com/contests/"+contest_list.result[i].id
                                        });
-    }
-    if("http://codeforces.com/contest/"+contest_list.result[i].id in prevFetchContestURLs)
+      if("http://codeforces.com/contest/"+contest_list.result[i].id in prevFetchContestURLs)
       {continue;}
     count++;
 
+    }
+    
 	}
         if(count>0){ 
           chrome.browserAction.setBadgeText({text:count.toString()});
@@ -60,8 +64,8 @@ function get_contests(){
 };
 xmlhttp.open("GET", "http://codeforces.com/api/contest.list", true);
 xmlhttp.send();
-return [ongoing_contests , upcoming_contests];
-}
+//return [ongoing_contests , upcoming_contests];
+
 
 
 function check_status(start_time, end_time){
@@ -77,6 +81,7 @@ function check_status(start_time, end_time){
     return 2; 
   }
 }
-
+//console.log("aaaaaaaaaaaaaaaaaaa");
 //get_contests();
-setInterval(get_contests(),1800000);
+//setInterval(get_contests(),3000000);
+setInterval(xmlhttp.send.bind(xmlhttp), 3000000);

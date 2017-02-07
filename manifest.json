@@ -3,13 +3,14 @@
 	
   "name": "TakeNote",
   "description": "Notifies you",
+  "background": {"scripts" : ["bg.js"]},
   "version": "1.0",
 
-  "background": {"scripts" : ["bg.js"]},
+ 
   "browser_action": {
     "default_icon": "images/icon.png",
     "default_popup": "./popup.html"
   },
   
-  "permissions":["http://codeforces.com/api/contest.list","tabs"],
+  "permissions":["http://codeforces.com/api/contest.list","tabs"]
 }
