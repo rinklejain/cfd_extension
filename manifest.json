@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 	
-  "name": "TakeNote",
+  "name": "Notify",
   "description": "Notifies you about upcoming contests",
   "background": {"scripts" : ["bg.js"]},
   "version": "1.0",

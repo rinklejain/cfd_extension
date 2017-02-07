@@ -19,7 +19,7 @@ function get_contests(){
       var prevFetchContestURLs = JSON.parse(localStorageData);
       //document.getElementById("aa").innerHTML= contest_list.result[0].id;
       //console.log(contest_list.result.length);
-      for(var i=0; i<100; i++)
+      for(var i=0; i<contest_list.result.length; i++)
       {
         var start_time = new Date(contest_list.result[i].startTimeSeconds * 1000);
         var end_time = Date.now() - contest_list.result[i].relativeTimeSeconds*1000;
