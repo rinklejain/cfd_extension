@@ -11,7 +11,7 @@
       body {
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
-        width:250px;
+        width:300px;
       }
       .contest
       {
@@ -19,14 +19,32 @@
         transition: width 2s;
         padding: 15px;
         margin-bottom: 0px !important;
+        font-size: 14px;
+        border-bottom: 0.2px solid #bab6b6;
       }
       .contest:hover
       {
         background : #f1f1f1;
         -webkit-transition: width 2s; /* Safari */
         transition: width 2s;
-        
-
+      }
+      .title
+      {
+        padding: 10px;
+        align-content: center;
+        font-size : 18px;
+        color: black;
+        font-weight: bold;
+        background: #eee;
+        margin-bottom: 7px;
+      }
+      .no_contest
+      {
+        color: #007bdc;
+        font-size: 16px;
+        padding: 10px;
+        align-content: center;
+        margin-bottom: 0px !important;
       }
       
     </style>
@@ -51,10 +69,10 @@
   </head>
   <body>
       <div class = "row">
-      <div class='title'><h5>Live Contests</h5></div>
+      <div class='title z-depth-2'> <div>Live Contests</div></div>
       <div id="ongoing"></div>
       
-      <div class='title'><h5>Upcoming Contests</h5></div>
+      <div class='title z-depth-2'><div>  Upcoming Contests</div></div>
       <div id="upcoming"></div>
       
       <div id="scroll-info"></div>

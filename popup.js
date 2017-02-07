@@ -71,6 +71,16 @@ function check_status(start_time, end_time){
     return 2; 
   }
 }
+function sortResults(people, asc) {
+    people = people.sort(function(a, b) {
+        if (asc) {
+            return (a.st > b.st) ? 1 : ((a.st < b.st) ? -1 : 0);
+        } else {
+            return (b.st > a.st) ? 1 : ((b.st < a.st) ? -1 : 0);
+        }
+    });
+    
+}
 get_contests();
 
 function putdata()
@@ -82,6 +92,7 @@ function putdata()
   $("#ongoing").empty();
   $("hr").remove();
 
+
   var FetchedContestURLs = {};
   var notifierTag = true;
 
@@ -90,7 +101,7 @@ function putdata()
   var prevFetchContestURLs = JSON.parse(localStorageData);
 
   curTime  = new Date();
-
+  sortResults(ongoing_contests.items,true);
   $.each(ongoing_contests.items , function(i,post){ 
     e = new Date((post.st+post.du)*1000);
     //console.log(e.toDateString());
@@ -129,18 +140,20 @@ function putdata()
       min = min.concat(" minutes ");
 //  
 
-      $("#ongoing").append(
-        '<a class = "contest_url" href="'+post.url+'">'+
-        '<li><br>'+post.name+
-        '<br>End: '+e.toDateString() +  '( Remaining time :'+day+hrs+min+')<br>'+
-        '</li></a><hr><br><br>');
+      $("#ongoing").append('<div class = "row contest"><div class="col s9">' + '<a  class = "contest_url" href='+'"'+post.url+'"'+' >'+
+      '<li>'+post.name+
+      '<br><br>End: '+e.toDateString()+' <br> ( Contest ends in : ' +  day +' '+ hrs+ ' ' + min + ' '+' )<br>'+
+      'Duration: '+((post.du/60).toString().split('.')[0])+' min <br>'+
+      '</li></a><br></div><div class =col s3><img src = "images/cf.png"></div><hr>');
+    
     }
     
   });
   if(ongoing_contests.items.length==0)
   {
-    $("#ongoing").append("<div><h6>No ongoing contsets</h6></div");
+    $("#ongoing").append('<div class = "no_contest row">No ongoing contests!!</div>');
   }
+  sortResults(upcoming_contests.items,true);
 
   $.each(upcoming_contests.items , function(i,post){ 
     var s = new Date(post.st*1000);
